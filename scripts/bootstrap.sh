@@ -16,6 +16,7 @@ create_app_user () {
   groupadd --gid 1000 $GUID
   useradd  --uid 1000 \
            --gid $GUID \
+           --system \
            --shell /bin/bash \
            --create-home $GUID
 }
