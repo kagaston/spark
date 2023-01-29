@@ -4,3 +4,6 @@ deploy
 vcs.xml
 tini
 tini.asc
+.DS_Store
+bin/
+jars/
