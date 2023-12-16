@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 
 main () {
-[[ -z $SPARK_WORKLOAD ]] && workload_error || is_workload_valid
+  # Added check for empty SPARK_WORKLOAD
+  if [[ -z $SPARK_WORKLOAD ]]; then
+    workload_error
+  else
+    is_workload_valid || workload_error
+  fi
 
-
-
-[[ $SPARK_WORKLOAD == "master" ]] && deploy_manager
-[[ $SPARK_WORKLOAD == "worker" ]] && deploy_worker
-[[ $SPARK_WORKLOAD == "submit" ]] && echo "SPARK SUBMIT"
-
+  case "$SPARK_WORKLOAD" in
+    master) deploy_manager ;;
+    worker) deploy_worker ;;
+    submit) echo "SPARK SUBMIT" ;;
+    *) workload_error ;;
+  esac
 }
 
 deploy_manager () {
@@ -21,25 +26,27 @@ set_manager () {
 }
 
 start_manager () {
+  # Added check for command success
   spark-class org.apache.spark.deploy.master.Master --host $SPARK_MASTER_HOST \
-                                                          --port $SPARK_MASTER_PORT \
-                                                          --webui-port $SPARK_MASTER_WEBUI_PORT
+                                                    --port $SPARK_MASTER_PORT \
+                                                    --webui-port $SPARK_MASTER_WEBUI_PORT || { echo "Failed to start Spark Master"; exit 1; }
 }
 
 deploy_worker () {
-  spark-class org.apache.spark.deploy.worker.Worker --webui-port $SPARK_WORKER_WEBUI_PORT $SPARK_MASTER
+  # Added check for command success
+  spark-class org.apache.spark.deploy.worker.Worker --webui-port $SPARK_WORKER_WEBUI_PORT $SPARK_MASTER || { echo "Failed to start Spark Worker"; exit 1; }
 }
 
 workload_error () {
-      echo "Undefined Workload Type $SPARK_WORKLOAD, must specify: master, worker, submit"
+  echo "Undefined Workload Type $SPARK_WORKLOAD, must specify: master, worker, submit" >&2
+  exit 1
 }
 
 is_workload_valid () {
-  [[ $SPARK_WORKLOAD == "master"  || $SPARK_WORKLOAD == "worker" || $SPARK_WORKLOAD == "submit" ]]
+  # Return explicit status based on condition
+  [[ $SPARK_WORKLOAD == "master" || $SPARK_WORKLOAD == "worker" || $SPARK_WORKLOAD == "submit" ]]
+  return $?
 }
 
-
-
-###############
 #<<< This is calling the main function, please do not place code past this point.
 main
