@@ -1,6 +1,6 @@
 FROM oraclelinux:9-slim  as base
 
-MAINTAINER "Kody Gaston" "kody.gaston@msn.com"
+LABEL maintainer="Kody Gaston <kody.gaston@msn.com>"
 LABEL version="1.0.1"
 
 ENV GUID=spark \
