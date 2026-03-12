@@ -1,9 +1,20 @@
-.idea/
-tmp
-deploy
-vcs.xml
-tini
-tini.asc
-.DS_Store
+# Build artifacts
+tmp/
+deploy/
 bin/
 jars/
+
+# GPG verification files
+tini
+tini.asc
+
+# IDE
+.idea/
+.vscode/
+vcs.xml
+
+# OS
+.DS_Store
+
+# Docker
+*.log

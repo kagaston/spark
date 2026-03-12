@@ -1,0 +1,13 @@
+.git/
+.github/
+.idea/
+.vscode/
+*.md
+!README.md
+.gitignore
+.dockerignore
+.DS_Store
+.hadolint.yaml
+justfile
+tmp/
+structure-test.yaml

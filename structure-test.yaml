@@ -1,0 +1,47 @@
+schemaVersion: "2.0.0"
+
+metadataTest:
+  exposedPorts: ["7077", "8080", "7000"]
+  cmd: ["bash", "entrypoint.sh"]
+  user: "spark"
+  workdir: "/opt/spark"
+
+fileExistenceTests:
+  - name: "spark home directory exists"
+    path: /opt/spark
+    shouldExist: true
+    permissions: "drwxrwx---"
+    uid: 1000
+    gid: 1000
+
+  - name: "entrypoint script exists"
+    path: /opt/spark/entrypoint.sh
+    shouldExist: true
+
+  - name: "bootstrap script exists"
+    path: /opt/spark/bootstrap.sh
+    shouldExist: true
+
+  - name: "logs directory exists"
+    path: /opt/spark/logs
+    shouldExist: true
+
+commandTests:
+  - name: "java 17 is installed"
+    command: "java"
+    args: ["-version"]
+    expectedError: ["openjdk version \"17"]
+
+  - name: "spark user exists"
+    command: "id"
+    args: ["spark"]
+    expectedOutput: ["uid=1000"]
+
+envVarTests:
+  - name: "SPARK_HOME is set"
+    key: "SPARK_HOME"
+    value: "/opt/spark"
+
+  - name: "SPARK_WORKLOAD defaults to master"
+    key: "SPARK_WORKLOAD"
+    value: "master"

@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
+# Provisions the Spark container: installs system packages and creates the app user.
+# Runs as root during docker build.
 
-microdnf -y install java-11-openjdk ncurses procps hostname
-microdnf -y clean all  create_app_user
-groupadd --gid 1000 $GUID
-useradd  --uid 1000 \
-         --gid $GUID \
-         --system \
-         --shell /bin/bash \
-         --create-home $GUID
-chown $GUID:$GUID $SPARK_HOME
-chmod 770 $SPARK_HOME
-export PATH="${PATH}:${SPARK_HOME}/bin"
+microdnf -y install java-17-openjdk ncurses procps hostname &&
+  microdnf -y clean all
 
+groupadd --gid 1000 "${SPARK_USER}"
+useradd --uid 1000 \
+  --gid "${SPARK_USER}" \
+  --system \
+  --shell /bin/bash \
+  --create-home "${SPARK_USER}"
 
+chown "${SPARK_USER}:${SPARK_USER}" "${SPARK_HOME}"
+chmod 770 "${SPARK_HOME}"
 
-#openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem
-#openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
-
+mkdir -p "${SPARK_LOG_DIR}"
+chown "${SPARK_USER}:${SPARK_USER}" "${SPARK_LOG_DIR}"

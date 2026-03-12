@@ -1,0 +1,7 @@
+# Default owner for everything
+* @kagaston
+
+# Docker and build configuration
+Dockerfile @kagaston
+scripts/ @kagaston
+.github/ @kagaston
