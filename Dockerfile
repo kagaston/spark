@@ -1,12 +1,12 @@
 FROM oraclelinux:9-slim AS base
 
 LABEL maintainer="Kody Gaston <kody.gaston@msn.com>"
-LABEL version="1.0.1"
+LABEL version="2.0.0"
 LABEL description="Apache Spark standalone cluster"
 LABEL org.opencontainers.image.source="https://github.com/kagaston/spark"
 
 ENV SPARK_USER=spark \
-    SPARK_VERSION=3.3.1 \
+    SPARK_VERSION=4.0.2 \
     HADOOP_VERSION=3 \
     PYTHONHASHSEED=1 \
     SPARK_HOME=/opt/spark \

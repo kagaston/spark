@@ -1,30 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Downloads, verifies, and extracts Apache Spark, then builds and pushes the Docker image.
-# Usage: build.sh [--push]
+# Downloads, GPG-verifies, and extracts Apache Spark bin and jars into deploy/.
+# Usage: build.sh
 
-readonly NAME="spark"
-readonly REPO="kagaston"
-readonly SPARK_VERSION="3.3.1"
+readonly SPARK_VERSION="4.0.2"
 readonly HADOOP_VERSION="3"
 readonly SPARK_FILES="tmp"
 readonly SPARK_ARCHIVE="spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
 
 main() {
-  get_spark
-
-  docker build \
-    -t "${REPO}/${NAME}:${SPARK_VERSION}" \
-    -t "${REPO}/${NAME}:latest" \
-    .
-
-  if [[ "${1:-}" == "--push" ]]; then
-    docker push --all-tags "${REPO}/${NAME}"
-  fi
-}
-
-get_spark() {
   echo "Checking for cached Spark archive..."
   [[ -f "${SPARK_FILES}/apache-spark.tgz" ]] || download_spark
 
@@ -36,6 +21,8 @@ get_spark() {
   mkdir -p deploy
   rm -rf deploy/jars deploy/bin
   mv -f bin jars deploy/
+
+  echo "Spark ${SPARK_VERSION} artifacts ready in deploy/"
 }
 
 download_spark() {
@@ -52,4 +39,4 @@ download_spark() {
   gpg --batch --verify "${SPARK_FILES}/apache-spark.tgz.asc" "${SPARK_FILES}/apache-spark.tgz"
 }
 
-main "$@"
+main

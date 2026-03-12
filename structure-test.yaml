@@ -27,10 +27,10 @@ fileExistenceTests:
     shouldExist: true
 
 commandTests:
-  - name: "java is installed"
+  - name: "java 17 is installed"
     command: "java"
     args: ["-version"]
-    expectedError: ["openjdk version"]
+    expectedError: ["openjdk version \"17"]
 
   - name: "spark user exists"
     command: "id"

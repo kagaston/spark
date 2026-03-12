@@ -4,7 +4,7 @@ set -euo pipefail
 # Provisions the Spark container: installs system packages and creates the app user.
 # Runs as root during docker build.
 
-microdnf -y install java-11-openjdk ncurses procps hostname &&
+microdnf -y install java-17-openjdk ncurses procps hostname &&
   microdnf -y clean all
 
 groupadd --gid 1000 "${SPARK_USER}"

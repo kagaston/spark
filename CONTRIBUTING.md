@@ -12,11 +12,12 @@
 
 | Command | Purpose |
 |---|---|
-| `just lint` | Lint Dockerfile and shell scripts |
+| `just lint` | Lint Dockerfile, shell scripts, and YAML |
 | `just lint-docker` | Lint Dockerfile only |
 | `just lint-shell` | Lint shell scripts only |
+| `just lint-yaml` | Lint YAML files |
 | `just format-shell` | Format shell scripts |
-| `just build` | Build the Docker image |
+| `just build` | Download Spark and build Docker image |
 | `just run` | Run the container (master mode) |
 | `just run worker` | Run the container (worker mode) |
 | `just test-structure` | Run container structure tests |
