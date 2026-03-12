@@ -1,45 +1,42 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-main () {
-[[ -z $SPARK_WORKLOAD ]] && workload_error || is_workload_valid
+# Dispatches the Spark process based on SPARK_WORKLOAD environment variable.
+# Usage: entrypoint.sh (reads SPARK_WORKLOAD from env)
 
+main() {
+  local workload="${SPARK_WORKLOAD:?SPARK_WORKLOAD is required (master, worker, submit)}"
 
-
-[[ $SPARK_WORKLOAD == "master" ]] && deploy_manager
-[[ $SPARK_WORKLOAD == "worker" ]] && deploy_worker
-[[ $SPARK_WORKLOAD == "submit" ]] && echo "SPARK SUBMIT"
-
+  case "${workload}" in
+    master) start_master ;;
+    worker) start_worker ;;
+    submit) start_submit ;;
+    *)
+      echo "Error: invalid SPARK_WORKLOAD '${workload}', must be: master, worker, submit" >&2
+      exit 1
+      ;;
+  esac
 }
 
-deploy_manager () {
-  set_manager
-  start_manager
+start_master() {
+  local master_host
+  master_host="$(hostname)"
+
+  spark-class org.apache.spark.deploy.master.Master \
+    --host "${master_host}" \
+    --port "${SPARK_MASTER_PORT}" \
+    --webui-port "${SPARK_MASTER_WEBUI_PORT}"
 }
 
-set_manager () {
-  export SPARK_MASTER_HOST=$(hostname)
+start_worker() {
+  spark-class org.apache.spark.deploy.worker.Worker \
+    --webui-port "${SPARK_WORKER_WEBUI_PORT}" \
+    "${SPARK_MASTER}"
 }
 
-start_manager () {
-  spark-class org.apache.spark.deploy.master.Master --host $SPARK_MASTER_HOST \
-                                                          --port $SPARK_MASTER_PORT \
-                                                          --webui-port $SPARK_MASTER_WEBUI_PORT
+start_submit() {
+  echo "SPARK SUBMIT -- not yet implemented" >&2
+  exit 1
 }
 
-deploy_worker () {
-  spark-class org.apache.spark.deploy.worker.Worker --webui-port $SPARK_WORKER_WEBUI_PORT $SPARK_MASTER
-}
-
-workload_error () {
-      echo "Undefined Workload Type $SPARK_WORKLOAD, must specify: master, worker, submit"
-}
-
-is_workload_valid () {
-  [[ $SPARK_WORKLOAD == "master"  || $SPARK_WORKLOAD == "worker" || $SPARK_WORKLOAD == "submit" ]]
-}
-
-
-
-###############
-#<<< This is calling the main function, please do not place code past this point.
 main
